@@ -1,4 +1,4 @@
-namespace Elastic_with_.Net_8;
+namespace ElasticWithNet8;
 
 public class WeatherForecast
 {

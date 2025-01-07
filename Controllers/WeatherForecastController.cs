@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Elastic_with_.Net_8.Controllers;
+namespace ElasticWithNet8.Controllers;
 
 [ApiController]
 [Route("[controller]")]
