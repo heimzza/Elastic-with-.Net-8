@@ -12,7 +12,7 @@ public interface IElasticService
 
     Task<User> Get(string key);
 
-    Task<List<User>> GetAll();
+    Task<List<User>?> GetAll();
 
     Task<bool> Remove(string key);
 

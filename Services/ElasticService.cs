@@ -21,14 +21,24 @@ public class ElasticService : IElasticService
         _client = new ElasticsearchClient(settings);
     }
 
-    public Task<bool> AddOrUpdate(User user)
+    public async Task<bool> AddOrUpdate(User user)
     {
-        throw new NotImplementedException();
+        var response = await _client.IndexAsync(user, idx =>
+            idx.Index(_elasticSettings.DefaultIndex)
+                .OpType(OpType.Index));
+
+        return response.IsValidResponse;
     }
 
-    public Task<bool> AddOrUpdateBulk(IEnumerable<User> users, string indexName)
+    public async Task<bool> AddOrUpdateBulk(IEnumerable<User> users, string indexName)
     {
-        throw new NotImplementedException();
+        var response = await _client.BulkAsync(
+            b => b.Index(_elasticSettings.DefaultIndex)
+                .UpdateMany(users,
+                    (ud, u)
+                        => ud.Doc(u).DocAsUpsert(true)));
+
+        return response.IsValidResponse;
     }
 
     public async Task CreateIndexIfNotExistsAsync(string indexName)
@@ -40,24 +50,35 @@ public class ElasticService : IElasticService
         }
     }
 
-    public Task<User> Get(string key)
+    public async Task<User> Get(string key)
     {
-        throw new NotImplementedException();
+        var response = await _client.GetAsync<User>(key, g
+            => g.Index(_elasticSettings.DefaultIndex));
+
+        return response.Source;
     }
 
-    public Task<List<User>> GetAll()
+    public async Task<List<User>?> GetAll()
     {
-        throw new NotImplementedException();
+        var response = await _client.SearchAsync<User>(s
+            => s.Index(_elasticSettings.DefaultIndex));
+        
+        return response.IsValidResponse ? response.Documents.ToList() : default;
     }
 
-    public Task<bool> Remove(string key)
+    public async Task<bool> Remove(string key)
     {
-        throw new NotImplementedException();
+        var response = await _client.DeleteAsync<User>(key,
+            d => d.Index(_elasticSettings.DefaultIndex));
+
+        return response.IsValidResponse;
     }
 
-    public Task<long?> RemoveAll()
+    public async Task<long?> RemoveAll()
     {
-        throw new NotImplementedException();
-    }
+        var response = await _client.DeleteByQueryAsync<User>(q 
+            => q.Indices(_elasticSettings.DefaultIndex));
 
+        return response.IsValidResponse ? response.Deleted : default;
+    }
 }
