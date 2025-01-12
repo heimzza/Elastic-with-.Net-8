@@ -29,7 +29,7 @@ public class UsersController(ILogger<UsersController> logger, IElasticService el
         var result = await elasticService.AddOrUpdate(user);
         
         return result 
-            ? Ok("User added successfully")
+            ? Ok("User added or updated successfully")
             : StatusCode(500, "Error adding or updating user.");
     }
 
